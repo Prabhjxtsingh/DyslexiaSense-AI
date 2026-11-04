@@ -183,6 +183,7 @@ const staticPagesDeployment = import.meta.env.VITE_STATIC_PAGES === "true";
                 onStartTest={startAssessment}
                 onGoArch={() => setCurrentView("arch")}
                 participantLabel={participantLabel}
+                researchModelUnavailable={staticPagesDeployment}
               />
             )}
 
@@ -278,7 +279,12 @@ const staticPagesDeployment = import.meta.env.VITE_STATIC_PAGES === "true";
     // =========================================================================
     // COMPONENT 1: HOME / LANDING VIEW
     // =========================================================================
-    function HomeLandingView({ onStartTest, onGoArch, participantLabel }) {
+    function HomeLandingView({
+      onStartTest,
+      onGoArch,
+      participantLabel,
+      researchModelUnavailable,
+    }) {
       return (
         <div className="space-y-16 animate-in fade-in duration-500">
 
@@ -302,7 +308,9 @@ const staticPagesDeployment = import.meta.env.VITE_STATIC_PAGES === "true";
               </h1>
 
               <p className="text-zinc-400 text-lg sm:text-xl leading-relaxed max-w-2xl font-medium">
-                Complete short reading, sound-blending, visual recognition, and spelling activities. Reports show observed task results. A separate experimental Dyt model score is available with its own 197 inputs; it is not calculated from these activities or a diagnostic probability.
+                {researchModelUnavailable
+                  ? "Complete short reading, sound-blending, visual recognition, and spelling activities. Reports show observed task results. The separate experimental Dyt model requires an API that is not available on this static site."
+                  : "Complete short reading, sound-blending, visual recognition, and spelling activities. Reports show observed task results. A separate experimental Dyt model score is available with its own 197 inputs; it is not calculated from these activities or a diagnostic probability."}
               </p>
 
               <div className="flex flex-wrap items-center gap-4 pt-4">
