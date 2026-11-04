@@ -870,7 +870,12 @@ function AccuracySummary({ title, result, detail }) {
   );
 }
 
-export function ScreeningReportView({ result, onRetest, onRunResearchModel }) {
+export function ScreeningReportView({
+  result,
+  onRetest,
+  onRunResearchModel,
+  researchModelUnavailable = false,
+}) {
   const [pdfError, setPdfError] = useState("");
 
   if (!result) {
@@ -1014,6 +1019,12 @@ export function ScreeningReportView({ result, onRetest, onRunResearchModel }) {
               separate Dyt research model with its 197 required inputs to see
               its uncalibrated probability for the dataset label.
             </p>
+            {researchModelUnavailable && (
+              <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-300">
+                The research model is unavailable in this static GitHub Pages
+                deployment because it does not host the ML API.
+              </p>
+            )}
             {onRunResearchModel && (
               <button
                 type="button"

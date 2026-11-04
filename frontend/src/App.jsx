@@ -7,6 +7,8 @@ import {
   ScreeningReportView,
 } from './AssessmentViews.jsx';
 
+const staticPagesDeployment = import.meta.env.VITE_STATIC_PAGES === "true";
+
     // --- MAIN REACT APPLICATION COMPONENT ---
     function App() {
       const [participantLabel, setParticipantLabel] = useState("");
@@ -211,11 +213,15 @@ import {
               <ScreeningReportView
                 result={assessmentResult}
                 onRetest={startAssessment}
-                onRunResearchModel={() => setCurrentView("model-assessment")}
+                onRunResearchModel={
+                  staticPagesDeployment
+                    ? null
+                    : () => setCurrentView("model-assessment")
+                }
+                researchModelUnavailable={staticPagesDeployment}
               />
             )}
-
-            {currentView === "model-assessment" && (
+            {currentView === "model-assessment" && !staticPagesDeployment && (
               <ResearchModelAssessment
                 onBack={() => setCurrentView("results")}
                 onComplete={completeResearchModel}

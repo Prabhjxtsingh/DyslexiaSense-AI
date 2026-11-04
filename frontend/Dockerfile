@@ -7,9 +7,6 @@ COPY . .
 RUN npm run build
 
 FROM nginx:1.29-alpine
-ENV PORT=80 \
-    BACKEND_URL=http://backend:8080 \
-    ML_API_URL=http://ml-api:8000
-COPY nginx.conf.template /etc/nginx/templates/default.conf.template
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /app/dist /usr/share/nginx/html
 EXPOSE 80

@@ -168,23 +168,19 @@ docker compose ps
 docker compose logs -f frontend backend ml-api mysql redis
 ```
 
-## Deploy to Railway using GitHub Actions
+## Deploy the frontend with GitHub Pages
 
-The repository includes a GitHub Actions workflow for deploying the frontend,
-Spring Boot API, and FastAPI service to Railway when changes are pushed to
-`main`. Railway hosts and bills for the services; the GitHub workflow deploys
-application code but does not provision infrastructure.
+The repository includes a GitHub Actions workflow that publishes the static
+React frontend to GitHub Pages when changes are pushed to `main`. GitHub Pages
+does not run the Spring Boot API, FastAPI inference service, MySQL, or Redis.
+The standalone literacy activities and PDF/JSON reports work in the browser;
+the Dyt research-model form is disabled because its API is not hosted on Pages.
 
-Before deploying, create the Railway project, its MySQL and Redis services,
-three application services (`frontend`, `backend`, and `ml-api`), and configure
-service variables, health checks, and GitHub Actions credentials. Follow the
-complete setup in [`documentation/deploy-railway.md`](documentation/deploy-railway.md).
-
-The deployment uses Railway's runtime `PORT` and private networking. The
-backend, ML API, and databases should remain private; publish only the frontend
-domain. Training data and model binaries are excluded from GitHub, so
-model-dependent inference will remain unavailable until authorized model
-artifacts are provisioned separately.
+Enable **Settings → Pages → Build and deployment → GitHub Actions**, then run
+the **Deploy frontend to GitHub Pages** workflow or push to `main`. No
+deployment secrets or third-party hosting account are required. Detailed
+instructions and limitations are in
+[`documentation/deploy-github-pages.md`](documentation/deploy-github-pages.md).
 
 ## Run individual services
 
