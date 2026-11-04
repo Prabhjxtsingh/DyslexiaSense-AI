@@ -1,0 +1,188 @@
+{
+  "task": "tabular dyslexia screening research",
+  "positive_label": "Yes",
+  "threshold": 0.5,
+  "split": {
+    "method": "stratified row-level random split; participant identifiers unavailable",
+    "random_state": 42,
+    "train_samples": 3224,
+    "validation_samples": 807,
+    "test_samples": 1008
+  },
+  "class_distribution": {
+    "No": 4499,
+    "Yes": 540
+  },
+  "models": {
+    "random_forest": {
+      "validation": {
+        "accuracy": 0.895910780669145,
+        "precision": 0.75,
+        "recall": 0.03488372093023256,
+        "specificity": 0.9986130374479889,
+        "f1": 0.06666666666666667,
+        "false_negative_rate": 0.9651162790697675,
+        "roc_auc": 0.8296697093829628
+      },
+      "test": {
+        "accuracy": 0.8918650793650794,
+        "precision": 0.0,
+        "recall": 0.0,
+        "specificity": 0.9988888888888889,
+        "f1": 0.0,
+        "false_negative_rate": 1.0,
+        "roc_auc": 0.8163734567901235
+      },
+      "test_confusion_matrix": [
+        [
+          899,
+          1
+        ],
+        [
+          108,
+          0
+        ]
+      ],
+      "train_validation_graph": {
+        "train": {
+          "accuracy": 1.0,
+          "recall": 1.0
+        },
+        "validation": {
+          "accuracy": 0.895910780669145,
+          "recall": 0.03488372093023256
+        }
+      },
+      "model_path": "ml\\models\\dyslexia_tabular_random_forest.joblib",
+      "positive_probability_column": 1
+    },
+    "extra_trees": {
+      "validation": {
+        "accuracy": 0.8971499380421314,
+        "precision": 0.8,
+        "recall": 0.046511627906976744,
+        "specificity": 0.9986130374479889,
+        "f1": 0.08791208791208792,
+        "false_negative_rate": 0.9534883720930233,
+        "roc_auc": 0.8708753991549206
+      },
+      "test": {
+        "accuracy": 0.8908730158730159,
+        "precision": 0.0,
+        "recall": 0.0,
+        "specificity": 0.9977777777777778,
+        "f1": 0.0,
+        "false_negative_rate": 1.0,
+        "roc_auc": 0.8299845679012345
+      },
+      "test_confusion_matrix": [
+        [
+          898,
+          2
+        ],
+        [
+          108,
+          0
+        ]
+      ],
+      "train_validation_graph": {
+        "train": {
+          "accuracy": 1.0,
+          "recall": 1.0
+        },
+        "validation": {
+          "accuracy": 0.8971499380421314,
+          "recall": 0.046511627906976744
+        }
+      },
+      "model_path": "ml\\models\\dyslexia_tabular_extra_trees.joblib",
+      "positive_probability_column": 1
+    },
+    "xgboost": {
+      "validation": {
+        "accuracy": 0.9008674101610905,
+        "precision": 0.546875,
+        "recall": 0.4069767441860465,
+        "specificity": 0.9597780859916782,
+        "f1": 0.4666666666666667,
+        "false_negative_rate": 0.5930232558139534,
+        "roc_auc": 0.8595135954585039
+      },
+      "test": {
+        "accuracy": 0.8918650793650794,
+        "precision": 0.4939759036144578,
+        "recall": 0.37962962962962965,
+        "specificity": 0.9533333333333334,
+        "f1": 0.4293193717277487,
+        "false_negative_rate": 0.6203703703703703,
+        "roc_auc": 0.8448353909465021
+      },
+      "test_confusion_matrix": [
+        [
+          858,
+          42
+        ],
+        [
+          67,
+          41
+        ]
+      ],
+      "train_validation_graph": {
+        "train": {
+          "accuracy": 0.999379652605459,
+          "recall": 1.0
+        },
+        "validation": {
+          "accuracy": 0.9008674101610905,
+          "recall": 0.4069767441860465
+        }
+      },
+      "model_path": "ml\\models\\dyslexia_tabular_xgboost.joblib",
+      "positive_probability_column": 1
+    },
+    "svm": {
+      "validation": {
+        "accuracy": 0.8934324659231723,
+        "precision": 0.0,
+        "recall": 0.0,
+        "specificity": 1.0,
+        "f1": 0.0,
+        "false_negative_rate": 1.0,
+        "roc_auc": 0.6484372480082573
+      },
+      "test": {
+        "accuracy": 0.8928571428571429,
+        "precision": 0.0,
+        "recall": 0.0,
+        "specificity": 1.0,
+        "f1": 0.0,
+        "false_negative_rate": 1.0,
+        "roc_auc": 0.6767592592592593
+      },
+      "test_confusion_matrix": [
+        [
+          900,
+          0
+        ],
+        [
+          108,
+          0
+        ]
+      ],
+      "train_validation_graph": {
+        "train": {
+          "accuracy": 0.8926799007444168,
+          "recall": 0.0
+        },
+        "validation": {
+          "accuracy": 0.8934324659231723,
+          "recall": 0.0
+        }
+      },
+      "model_path": "ml\\models\\dyslexia_tabular_svm.joblib",
+      "positive_probability_column": 1
+    }
+  },
+  "notice": "Research results only; row-level splitting may not prevent participant overlap because participant identifiers are not available.",
+  "generated_at": "2026-11-04T18:16:39.414989+00:00"
+}

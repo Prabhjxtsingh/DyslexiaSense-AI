@@ -1,0 +1,62 @@
+﻿@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Accessibility Reading Guide Overlay */
+    .reading-guide {
+      pointer-events: none;
+      position: fixed;
+      left: 0;
+      right: 0;
+      height: 56px;
+      background: rgba(253, 224, 71, 0.15);
+      border-top: 1px solid rgba(234, 179, 8, 0.4);
+      border-bottom: 1px solid rgba(234, 179, 8, 0.4);
+      backdrop-filter: blur(2px);
+      z-index: 9999;
+      transform: translateY(-50%);
+      transition: top 0.1s ease-out;
+      display: none;
+    }
+    .reading-guide.active {
+      display: block;
+    }
+
+    /* Dyslexia Friendly Letter-Spacing and Line-Height mode */
+    body.dyslexia-font {
+      font-family: 'Lexend', sans-serif !important;
+      letter-spacing: 0.05em !important;
+      word-spacing: 0.12em !important;
+      line-height: 1.8 !important;
+    }
+    body.dyslexia-font p,
+    body.dyslexia-font span,
+    body.dyslexia-font button,
+    body.dyslexia-font input {
+      letter-spacing: 0.04em !important;
+    }
+
+    /* Custom subtle scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #e4e4e7;
+      border-radius: 99px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #d4d4d8;
+    }
+
+    /* Smooth page transitions */
+    #root {
+      animation: fadeIn 0.4s ease-out forwards;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
