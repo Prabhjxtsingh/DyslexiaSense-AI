@@ -1,8 +1,9 @@
+import os
 from typing import Any
 
 from fastapi import FastAPI, File, HTTPException, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
-import tensorflow as tf
 
 from ml.api.inference import (
     predict_handwriting_bytes,
@@ -18,6 +19,21 @@ app = FastAPI(
         "Outputs are experimental research indicators, not diagnoses."
     ),
     version="1.0.0",
+)
+
+allowed_origins = [
+    origin.strip().rstrip("/")
+    for origin in os.getenv(
+        "ML_CORS_ALLOWED_ORIGINS",
+        "http://localhost:5173",
+    ).split(",")
+    if origin.strip()
+]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=allowed_origins,
+    allow_methods=["GET", "POST"],
+    allow_headers=["Content-Type"],
 )
 
 
@@ -63,9 +79,14 @@ async def handwriting_prediction(
         raise HTTPException(status_code=413, detail="Image must be 10 MB or smaller.")
     try:
         return predict_handwriting_bytes(image_bytes)
+    except ImportError as error:
+        raise HTTPException(
+            status_code=503,
+            detail="Handwriting inference is unavailable in this tabular deployment.",
+        ) from error
     except FileNotFoundError as error:
         raise HTTPException(status_code=503, detail=str(error)) from error
-    except (ValueError, tf.errors.InvalidArgumentError) as error:
+    except ValueError as error:
         raise HTTPException(
             status_code=422, detail=f"Could not process uploaded image: {error}"
         ) from error

@@ -73,7 +73,7 @@ export async function createAssessmentPdf(result) {
 
   if (result.researchModel) {
     addSection("Separate Dyt research model score", [
-      `${Math.round(result.researchModel.score * 100)}% for the dataset label "${result.researchModel.positive_label}"`,
+      `Dyt dyslexia label "${result.researchModel.positive_label}": ${Math.round(result.researchModel.score * 100)}%; "${result.researchModel.negative_label}": ${100 - Math.round(result.researchModel.score * 100)}%`,
       `Model: ${result.researchModel.model}; predicted label: ${result.researchModel.prediction}`,
       `Generated: ${new Date(result.researchModel.generatedAt).toLocaleString()}`,
       "This uncalibrated model score uses a separate 197-field Dyt input form. It is not calculated from the activities and is not a probability of diagnosis.",

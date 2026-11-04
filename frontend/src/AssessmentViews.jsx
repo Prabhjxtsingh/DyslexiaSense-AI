@@ -544,6 +544,13 @@ export function InteractiveAssessmentRunner({ step, setStep, onComplete, onCance
 }
 
 const researchModelName = "xgboost";
+const researchModelApiUrl = (import.meta.env.VITE_ML_API_URL || "")
+  .trim()
+  .replace(/\/+$/, "");
+const researchModelApiEndpoint = (path) =>
+  researchModelApiUrl
+    ? `${researchModelApiUrl}${path.replace(/^\/ml-api/, "")}`
+    : path;
 const taskFeaturePattern = /^(Clicks|Hits|Misses|Score|Accuracy|Missrate)(\d+)$/;
 
 function ModelFeatureInput({ feature, value, onChange }) {
@@ -591,7 +598,7 @@ export function ResearchModelAssessment({ onBack, onComplete }) {
 
   useEffect(() => {
     const controller = new AbortController();
-    fetch(`/ml-api/schema/tabular/${researchModelName}`, {
+    fetch(researchModelApiEndpoint(`/ml-api/schema/tabular/${researchModelName}`), {
       signal: controller.signal,
     })
       .then(async (response) => {
@@ -673,17 +680,27 @@ export function ResearchModelAssessment({ onBack, onComplete }) {
         throw new Error("Enter a valid value for every required model input.");
       }
 
-      const response = await fetch(`/ml-api/predict/tabular/${researchModelName}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ features: requestFeatures }),
-      });
+      const response = await fetch(
+        researchModelApiEndpoint(`/ml-api/predict/tabular/${researchModelName}`),
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ features: requestFeatures }),
+        },
+      );
       const body = await response.json();
       if (!response.ok) {
         throw new Error(body.detail ?? "The research model could not produce an estimate.");
       }
-      if (!Number.isFinite(body.score) || body.score < 0 || body.score > 1) {
-        throw new Error("The research model returned an invalid score.");
+      if (
+        !Number.isFinite(body.score) ||
+        body.score < 0 ||
+        body.score > 1 ||
+        !Number.isFinite(body.negative_score) ||
+        body.negative_score < 0 ||
+        body.negative_score > 1
+      ) {
+        throw new Error("The research model returned invalid class scores.");
       }
 
       onComplete({
@@ -983,24 +1000,26 @@ export function ScreeningReportView({
           id="dyslexia-chance-heading"
           className="text-xl font-bold text-zinc-900 dark:text-white"
         >
-          Research model probability
+          Research model probabilities
         </h2>
         {result.researchModel ? (
           <>
             <p className="mt-2 text-2xl font-black text-zinc-900 dark:text-white">
-              {Math.round(result.researchModel.score * 100)}% for the Dyt label{" "}
-              “{result.researchModel.positive_label}”
+              Dyslexia label “{result.researchModel.positive_label}”:{" "}
+              {Math.round(result.researchModel.score * 100)}% · “
+              {result.researchModel.negative_label}”:{" "}
+              {100 - Math.round(result.researchModel.score * 100)}%
             </p>
             <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
-              Dyt {result.researchModel.model} model label:{" "}
+              Dyt {result.researchModel.model} predicted label:{" "}
               <strong>{result.researchModel.prediction}</strong> · Generated{" "}
               {new Date(result.researchModel.generatedAt).toLocaleString()}
             </p>
             <p className="mt-2 text-sm leading-relaxed text-zinc-600 dark:text-zinc-300">
-              This is the model's uncalibrated predict_proba output for the Dyt
-              dataset's “{result.researchModel.positive_label}” label, based on
-              a separate 197-field Dyt input form. It is not a probability of
-              diagnosis and is unrelated to the activity scores above.
+              These are uncalibrated model scores for the Dyt dataset labels,
+              based on a separate 197-field Dyt input form. They are not a
+              person's chance of receiving a diagnosis and are unrelated to
+              the activity scores above.
             </p>
           </>
         ) : (
@@ -1015,8 +1034,8 @@ export function ScreeningReportView({
             </p>
             {researchModelUnavailable && (
               <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-300">
-                The research model is unavailable in this static GitHub Pages
-                deployment because it does not host the ML API.
+                The research model API has not been configured for this
+                GitHub Pages deployment.
               </p>
             )}
             {onRunResearchModel && (

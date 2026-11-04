@@ -6,8 +6,6 @@ from typing import Any
 
 import joblib
 import pandas as pd
-import tensorflow as tf
-from tensorflow.keras.applications.mobilenet_v2 import preprocess_input
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -37,7 +35,9 @@ def load_tabular_model(model_name: str = "random_forest") -> Any:
 
 
 @lru_cache(maxsize=1)
-def load_handwriting_model() -> tf.keras.Model:
+def load_handwriting_model() -> Any:
+    import tensorflow as tf
+
     model_path = MODEL_DIR / "dyslexia_handwriting_model.keras"
     if not model_path.is_file():
         raise FileNotFoundError(
@@ -69,13 +69,30 @@ def predict_tabular(
             f"Received {len(unexpected_features)} unexpected feature(s): "
             f"{preview}{suffix}"
         )
+    classes = list(model.classes_)
+    if len(classes) != 2:
+        raise ValueError("The tabular model must have exactly two output classes.")
+    positive_index = next(
+        (
+            index
+            for index, value in enumerate(classes)
+            if str(value).strip().lower() in {"1", "yes", "true"}
+        ),
+        None,
+    )
+    if positive_index is None:
+        raise ValueError("The tabular model does not expose a positive Yes class.")
     sample = pd.DataFrame([features])
-    probability = float(model.predict_proba(sample)[0, 1])
+    class_probabilities = model.predict_proba(sample)[0]
+    positive_probability = float(class_probabilities[positive_index])
+    negative_probability = 1.0 - positive_probability
     return {
         "model": model_name,
-        "prediction": "Yes" if probability >= 0.5 else "No",
+        "prediction": "Yes" if positive_probability >= 0.5 else "No",
         "positive_label": "Yes",
-        "score": probability,
+        "score": positive_probability,
+        "negative_label": "No",
+        "negative_score": negative_probability,
         "threshold": 0.5,
     }
 
@@ -120,21 +137,31 @@ def tabular_schema(model_name: str = "random_forest") -> dict[str, Any]:
 
 
 def predict_handwriting_bytes(image_bytes: bytes) -> dict[str, Any]:
+    import tensorflow as tf
+    from tensorflow.keras.applications.mobilenet_v2 import preprocess_input
+
     if not image_bytes:
         raise ValueError("The uploaded image is empty.")
     model = load_handwriting_model()
-    image = tf.io.decode_image(
-        image_bytes, channels=3, expand_animations=False
-    )
-    image.set_shape([None, None, 3])
-    image = tf.image.resize(image, [IMAGE_SIZE, IMAGE_SIZE])
-    image = preprocess_input(image)
-    probability = float(model.predict(tf.expand_dims(image, 0), verbose=0)[0, 0])
+    try:
+        image = tf.io.decode_image(
+            image_bytes, channels=3, expand_animations=False
+        )
+        image.set_shape([None, None, 3])
+        image = tf.image.resize(image, [IMAGE_SIZE, IMAGE_SIZE])
+        image = preprocess_input(image)
+        positive_probability = float(
+            model.predict(tf.expand_dims(image, 0), verbose=0)[0, 0]
+        )
+    except tf.errors.InvalidArgumentError as error:
+        raise ValueError(f"Invalid image: {error}") from error
     return {
         "model": "mobilenetv2",
-        "prediction": "Yes" if probability >= 0.5 else "No",
+        "prediction": "Yes" if positive_probability >= 0.5 else "No",
         "positive_label": "Yes",
-        "score": probability,
+        "score": positive_probability,
+        "negative_label": "No",
+        "negative_score": 1 - positive_probability,
         "threshold": 0.5,
     }
 

@@ -45,6 +45,7 @@ jobs:
         env:
           VITE_BASE_PATH: /DyslexiaSense-AI/
           VITE_STATIC_PAGES: "true"
+          VITE_ML_API_URL: ${{ vars.VITE_ML_API_URL }}
         run: npm run build
 
       - name: Add Pages marker

@@ -7,9 +7,9 @@ static deployment.
 
 The local literacy activities, in-browser result summary, and PDF/JSON
 downloads work on Pages. Activity history exists only for the current browser
-page session. The research-model form is disabled because Pages cannot host the
-ML API; authenticated backend features and database persistence also require
-separately hosted services.
+page session. The research-model form is available only after configuring its
+separately hosted API; authenticated backend features and database persistence
+also require separately hosted services.
 
 ## Enable deployment
 
@@ -22,7 +22,10 @@ separately hosted services.
 The workflow installs frontend dependencies, runs the frontend tests, builds
 the React app with the repository subpath `/DyslexiaSense-AI/`, and publishes
 the build using GitHub Pages Actions. Subsequent pushes to `main` deploy
-automatically. No repository secrets or variables are needed.
+automatically. The static activity flow needs no repository variables. To
+connect the optional Dyt research model, follow
+[`deploy-ml-api-render.md`](./deploy-ml-api-render.md) and configure the
+`VITE_ML_API_URL` repository Actions variable.
 
 After the workflow succeeds, the site URL is:
 
@@ -35,8 +38,9 @@ After the workflow succeeds, the site URL is:
   by GitHub Pages.
 - The standalone literacy activities calculate measured activity results
   locally. Those measurements do not estimate a diagnosis probability.
-- The separate Dyt research model cannot run on the Pages site because the
-  inference API and trained model artifact are not hosted there.
+- The separate Dyt research model cannot run on Pages by itself; its FastAPI
+  service must be deployed separately. Its uncalibrated scores are for the
+  Dyt dataset labels and are not diagnosis probabilities.
 - No personal activity results are uploaded by the static activity flow;
   results remain in page memory unless the user downloads a report.
 

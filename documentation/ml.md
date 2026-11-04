@@ -60,12 +60,18 @@ The API exposes `/health`, `/predict/tabular/{model_name}`, and
 
 The React results page provides a separate Dyt XGBoost research-model form.
 Its schema is loaded from `/schema/tabular/xgboost`, and its 197 inputs are sent
-to `/predict/tabular/xgboost` through the frontend's `/ml-api` proxy. These
-inputs describe the source Dyt tasks and are not derived from the app's reading,
-sound, visual, or spelling activities. The returned `predict_proba` value is
-for the dataset's `Yes` label only; it is uncalibrated for clinical
-interpretation and is not a probability of diagnosis. Requests and results are
-not persisted by this frontend flow.
+to `/predict/tabular/xgboost` through the frontend proxy or configured hosted
+API. The response includes the model's `Yes` and `No` dataset-label scores and
+its threshold-based predicted label. These inputs describe the source Dyt
+tasks and are not derived from the app's reading, sound, visual, or spelling
+activities. The scores are uncalibrated for clinical interpretation and are
+not a person's probability of diagnosis. Requests and results are not persisted
+by this frontend flow.
+
+The XGBoost artifact used by the Render research API is tracked at
+`ml/models/dyslexia_tabular_xgboost.joblib`. Other model artifacts and source
+datasets remain untracked. See
+[`deploy-ml-api-render.md`](./deploy-ml-api-render.md) for deployment steps.
 
 ## Research limitations
 

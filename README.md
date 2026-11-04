@@ -44,8 +44,8 @@ medical product and cannot diagnose dyslexia**.
   ruler, and high-contrast mode.
 - **Downloadable results:** export an activity report as PDF or JSON.
 - **Optional model demonstration:** submit the source Dyt tabular feature set
-  to the separate XGBoost research model and view its output for the dataset's
-  `Yes` label.
+  to the separate XGBoost research model and view its `Yes` and `No` dataset
+  label scores.
 - **Separate ML workflows:** tabular classifiers and a handwriting image
   classifier are trained and evaluated independently; their outputs are not
   combined.
@@ -61,17 +61,18 @@ distinctions are important when trying the app:
 |---|---|
 | Literacy activities | Runs in the React app and calculates results from the user's answers, response times, and observer-entered reading observations. |
 | Activity report | Displayed in the browser and downloadable as PDF or JSON. Results and history are held in page memory; they are not saved to MySQL. |
-| Dyt model form | Optional separate research flow. It requests the model's 197-field schema and submits user-provided source-task features directly to FastAPI via the `/ml-api` proxy. |
-| Dyt model output | The model's `predict_proba` value refers to the source dataset's `Yes` label. It is an uncalibrated research score, not a diagnosis probability. |
+| Dyt model form | Optional separate research flow. It requests the model's 197-field schema and submits user-provided source-task features to FastAPI via the development proxy or the configured hosted API. |
+| Dyt model output | Shows uncalibrated `Yes` and `No` scores for the source dataset labels. These are not a person's chance of receiving a diagnosis. |
 | Spring Boot API | Provides authentication endpoints, authenticated tabular/handwriting inference endpoints, assessment history, and health check. These model API routes save results for the authenticated user. |
 | Handwriting inference | Available through the ML and Spring APIs when a trained model artifact is present. It is not part of the current four-activity React screening flow. |
 | Audio assessment | The repository describes a multimedia goal, but live audio capture/analysis is not part of the current assessment flow. |
 
-The React research form currently communicates with FastAPI directly through
-the development proxy or Nginx `/ml-api` proxy. That browser flow does not use
-the Spring authentication or persistence flow. Likewise, the activity report
-does not call the Spring assessment endpoints. The API capabilities should not
-be confused with frontend features that are already wired into the same flow.
+The React research form communicates with FastAPI through the development
+proxy, Nginx `/ml-api` proxy, or the separately configured Render API for the
+GitHub Pages deployment. That browser flow does not use the Spring
+authentication or persistence flow. Likewise, the activity report does not
+call the Spring assessment endpoints. The API capabilities should not be
+confused with frontend features that are already wired into the same flow.
 
 ## Technology stack
 
@@ -174,13 +175,17 @@ The repository includes a GitHub Actions workflow that publishes the static
 React frontend to GitHub Pages when changes are pushed to `main`. GitHub Pages
 does not run the Spring Boot API, FastAPI inference service, MySQL, or Redis.
 The standalone literacy activities and PDF/JSON reports work in the browser;
-the Dyt research-model form is disabled because its API is not hosted on Pages.
+the separate Dyt research model needs its own hosted API and its 197 required
+inputs. Its uncalibrated dataset-label scores are not diagnosis probabilities.
 
 Enable **Settings → Pages → Build and deployment → GitHub Actions**, then run
 the **Deploy frontend to GitHub Pages** workflow or push to `main`. No
-deployment secrets or third-party hosting account are required. Detailed
-instructions and limitations are in
-[`documentation/deploy-github-pages.md`](documentation/deploy-github-pages.md).
+deployment secrets are required. To enable the optional research model, deploy
+the FastAPI service separately to Render and configure the GitHub Actions
+`VITE_ML_API_URL` variable. The selected XGBoost model artifact is public in
+this repository; the raw datasets remain excluded. See
+[`documentation/deploy-github-pages.md`](documentation/deploy-github-pages.md)
+and [`documentation/deploy-ml-api-render.md`](documentation/deploy-ml-api-render.md).
 
 ## Run individual services
 

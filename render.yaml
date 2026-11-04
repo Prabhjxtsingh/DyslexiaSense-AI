@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: dyslexiasense-ml-api
+    runtime: python
+    plan: free
+    buildCommand: pip install -r ml/api/requirements.txt
+    startCommand: uvicorn ml.api.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.4
+      - key: ML_CORS_ALLOWED_ORIGINS
+        value: https://prabhjxtsingh.github.io

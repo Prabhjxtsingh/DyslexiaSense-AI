@@ -53,7 +53,9 @@ describe("createAssessmentPdf", () => {
       ...sampleResult,
       researchModel: {
         score: 0.42,
+        negative_score: 0.58,
         positive_label: "Yes",
+        negative_label: "No",
         model: "xgboost",
         prediction: "No",
         generatedAt: "2026-11-05T00:00:00.000Z",
@@ -61,6 +63,6 @@ describe("createAssessmentPdf", () => {
     });
 
     expect(pdf.output()).toContain("Separate Dyt research model score");
-    expect(pdf.output()).toContain("42% for the dataset label");
+    expect(pdf.output()).toContain('Dyt dyslexia label "Yes": 42%; "No": 58%');
   });
 });

@@ -8,6 +8,11 @@ import {
 } from './AssessmentViews.jsx';
 
 const staticPagesDeployment = import.meta.env.VITE_STATIC_PAGES === "true";
+const researchModelApiConfigured = Boolean(
+  (import.meta.env.VITE_ML_API_URL || "").trim(),
+);
+const researchModelUnavailable =
+  staticPagesDeployment && !researchModelApiConfigured;
 
     // --- MAIN REACT APPLICATION COMPONENT ---
     function App() {
@@ -183,7 +188,7 @@ const staticPagesDeployment = import.meta.env.VITE_STATIC_PAGES === "true";
                 onStartTest={startAssessment}
                 onGoArch={() => setCurrentView("arch")}
                 participantLabel={participantLabel}
-                researchModelUnavailable={staticPagesDeployment}
+                researchModelUnavailable={researchModelUnavailable}
               />
             )}
 
@@ -215,14 +220,14 @@ const staticPagesDeployment = import.meta.env.VITE_STATIC_PAGES === "true";
                 result={assessmentResult}
                 onRetest={startAssessment}
                 onRunResearchModel={
-                  staticPagesDeployment
+                  researchModelUnavailable
                     ? null
                     : () => setCurrentView("model-assessment")
                 }
-                researchModelUnavailable={staticPagesDeployment}
+                researchModelUnavailable={researchModelUnavailable}
               />
             )}
-            {currentView === "model-assessment" && !staticPagesDeployment && (
+            {currentView === "model-assessment" && !researchModelUnavailable && (
               <ResearchModelAssessment
                 onBack={() => setCurrentView("results")}
                 onComplete={completeResearchModel}
@@ -268,8 +273,10 @@ const staticPagesDeployment = import.meta.env.VITE_STATIC_PAGES === "true";
               </div>
               <div className="p-4 bg-zinc-50 dark:bg-zinc-900/50 rounded-2xl border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 leading-relaxed text-xs">
                 <strong>Important limitation:</strong>{" "}
-                {staticPagesDeployment
-                  ? "Activity results are observations, not validated diagnostic measures. The static GitHub Pages site does not host the separate research model. Neither replaces assessment by a qualified professional."
+                {researchModelUnavailable
+                  ? "Activity results are observations, not validated diagnostic measures. The static GitHub Pages site is not configured to call the separate research model. Neither replaces assessment by a qualified professional."
+                  : staticPagesDeployment
+                    ? "Activity results are observations, not validated diagnostic measures. The separate Dyt model provides uncalibrated dataset-label scores from its own inputs, not a person's chance of diagnosis. Neither replaces assessment by a qualified professional."
                   : "Activity results are observations, not validated diagnostic measures. The separate Dyt model returns an uncalibrated research score for its dataset label, not a person's chance of diagnosis. Neither replaces assessment by a qualified professional."}
               </div>
             </div>
