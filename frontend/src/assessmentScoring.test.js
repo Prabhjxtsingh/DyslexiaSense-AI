@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   phonologyItems,
+  isReadingInputComplete,
   readingWordCount,
   scoreReading,
   scoreResponses,
@@ -55,6 +56,26 @@ describe("scoreResponses", () => {
 });
 
 describe("scoreReading", () => {
+  it("accepts explicit zero observations as completed reading inputs", () => {
+    expect(
+      isReadingInputComplete({
+        correctWords: "0",
+        omissions: "0",
+        substitutions: "0",
+      }),
+    ).toBe(true);
+  });
+
+  it("rejects reading inputs that are blank", () => {
+    expect(
+      isReadingInputComplete({
+        correctWords: "27",
+        omissions: "",
+        substitutions: "0",
+      }),
+    ).toBe(false);
+  });
+
   it("derives accuracy and fluency from the observer's counts and measured time", () => {
     const result = scoreReading({
       correctWords: readingWordCount - 2,

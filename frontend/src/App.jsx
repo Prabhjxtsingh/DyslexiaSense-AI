@@ -267,7 +267,10 @@ const staticPagesDeployment = import.meta.env.VITE_STATIC_PAGES === "true";
                 </div>
               </div>
               <div className="p-4 bg-zinc-50 dark:bg-zinc-900/50 rounded-2xl border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 leading-relaxed text-xs">
-                <strong>Important limitation:</strong> Activity results are observations, not validated diagnostic measures. The separate Dyt model returns an uncalibrated research score for its dataset label, not a person's chance of diagnosis. Neither replaces assessment by a qualified professional.
+                <strong>Important limitation:</strong>{" "}
+                {staticPagesDeployment
+                  ? "Activity results are observations, not validated diagnostic measures. The static GitHub Pages site does not host the separate research model. Neither replaces assessment by a qualified professional."
+                  : "Activity results are observations, not validated diagnostic measures. The separate Dyt model returns an uncalibrated research score for its dataset label, not a person's chance of diagnosis. Neither replaces assessment by a qualified professional."}
               </div>
             </div>
           </footer>

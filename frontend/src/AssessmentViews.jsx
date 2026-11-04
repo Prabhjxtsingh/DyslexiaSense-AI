@@ -3,6 +3,7 @@ import {
   phonologyItems,
   readingPassage,
   readingWordCount,
+  isReadingInputComplete,
   scoreReading,
   scoreResponses,
   spellingItems,
@@ -474,13 +475,7 @@ export function InteractiveAssessmentRunner({ step, setStep, onComplete, onCance
 
           <button
             type="button"
-            disabled={
-              !timerStopped ||
-              timerSeconds === 0 ||
-              !readingInputs.correctWords ||
-              !readingInputs.omissions ||
-              !readingInputs.substitutions
-            }
+            disabled={!timerStopped || timerSeconds === 0 || !isReadingInputComplete(readingInputs)}
             onClick={finishReading}
             className="w-full rounded-full bg-zinc-900 px-8 py-4 font-bold text-white disabled:cursor-not-allowed disabled:opacity-40 dark:bg-white dark:text-zinc-900"
           >
@@ -1014,10 +1009,9 @@ export function ScreeningReportView({
               Not estimated
             </p>
             <p className="mt-2 text-sm leading-relaxed text-zinc-600 dark:text-zinc-300">
-              Chance of a dyslexia diagnosis: not estimated. The activity
-              scores cannot be converted into a diagnosis probability. Run the
-              separate Dyt research model with its 197 required inputs to see
-              its uncalibrated probability for the dataset label.
+              {researchModelUnavailable
+                ? "Chance of a dyslexia diagnosis: not estimated. Activity scores cannot be converted into a diagnosis probability, and this static site does not host the separate research model."
+                : "Chance of a dyslexia diagnosis: not estimated. The activity scores cannot be converted into a diagnosis probability. Run the separate Dyt research model with its 197 required inputs to see its uncalibrated probability for the dataset label."}
             </p>
             {researchModelUnavailable && (
               <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-300">

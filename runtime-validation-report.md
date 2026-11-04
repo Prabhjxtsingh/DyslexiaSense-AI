@@ -1,19 +1,20 @@
 # Runtime Validation Report
 
-**Generated**: 2026-11-05T01:04:00+05:30
+**Generated**: 2026-11-05T01:42:31+05:30
 **Target**: `DyslexiaSense-AI`
 
 ## Summary
 
 | Step | Status | Exit Code | Details |
 |------|--------|-----------|---------|
-| Frontend tests and build | PASS | 0 | 7 unit tests passed; Vite production build succeeded. |
-| Frontend startup | PASS | 0 | Vite served the app; `GET /` returned HTTP 200. |
-| FastAPI startup and XGBoost inference | PASS | 0 | `/health` passed; schema returned 197 fields and observed categorical options; valid-shaped test input returned a score between 0 and 1. |
-| Browser E2E | PASS | 0 | Completed all activities, loaded the 197-field form, submitted test-only values, and verified the Dyt-label probability output and diagnostic disclaimer. |
-| Full-stack backend | UNVERIFIED | n/a | Backend `/api/health` did not respond. Maven and Docker are not installed; Redis was not listening locally. |
+| Frontend tests and static build | PASS | 0 | 11 tests passed; GitHub Pages Vite production build succeeded. |
+| Frontend startup | PASS | 0 | Local Vite server started; `GET /` returned HTTP 200. |
+| Browser flow | PASS | 0 | Playwright completed the reading, sound, visual, and spelling flow and verified a zero-count reading observation can continue to results. |
+| GitHub Pages deployment | PASS | 0 | Previous run #3 succeeded and its published site was checked; that run predates the current source changes. |
+| FastAPI startup and model inference | PASS (prior run) | 0 | Earlier validation confirmed `/health`, the 197-field XGBoost schema, and a valid-shaped test response. This separate ML service is not hosted by GitHub Pages. |
+| Spring Boot, MySQL, and Redis integration | UNVERIFIED | n/a | Docker and Maven are not installed; the API, database connectivity, authentication, and persistence were not validated in this run. |
 
-**Overall**: NEEDS_SIGNOFF — frontend and FastAPI model flow passed, but the complete Spring Boot, MySQL, Redis, and persistence stack could not be started in this environment.
+**Overall**: NEEDS_SIGNOFF — the GitHub Pages frontend and its activity flow pass, but GitHub Pages does not host the Spring Boot, FastAPI, MySQL, or Redis services, and backend integration remains unverified.
 
 ## Environment
 
@@ -22,17 +23,20 @@
 - Docker: unavailable (Docker CLI not installed)
 - Maven: unavailable
 - Java: available (`25.0.5`)
-- Backend health endpoint: unavailable at `127.0.0.1:8080`
-- Redis: no listener at port `6379`
-- MySQL: a local listener was detected at port `3306`; database authentication and application connectivity were not verified.
+- Local Vite health: `http://127.0.0.1:5173/` → HTTP 200
+- GitHub Pages URL: `https://prabhjxtsingh.github.io/DyslexiaSense-AI/`
+- Playwright: available via `npx playwright`; Chromium installed successfully.
+- Backend, Redis, and MySQL application connectivity: not tested in this run.
 
 ## Test Evidence
 
-- `frontend`: `npm test` — 1 test file, 7 tests passed.
-- `frontend`: `npm run build` — passed.
-- Browser flow: all four activities completed, with one visual question skipped. Then the separate model form loaded all 197 inputs and displayed the returned probability for the Dyt `Yes` label.
-- Model flow test fixture: categorical fields used the first available option and numeric fields were set to zero solely to test request/response wiring. The displayed score from this artificial fixture is not a participant estimate.
-- FastAPI: `/health` passed; `/schema/tabular/xgboost` returned 197 fields and category options; valid-shaped inputs returned a probability score from `predict_proba`.
+- `frontend`: `npm test` — 2 test files, 11 tests passed (exit code 0).
+- `frontend`: GitHub Pages production build with `VITE_BASE_PATH=/DyslexiaSense-AI/` and `VITE_STATIC_PAGES=true` — passed (exit code 0).
+- `frontend`: local Vite startup — `GET /` returned HTTP 200.
+- Browser flow: Playwright started activities, started/stopped the reading timer, entered 27 correct words and zero omissions/substitutions, verified the continue button was enabled, then completed the remaining activities by skipping prompts and reached the results screen.
+- GitHub Actions run #3 (`41903094744`): Pages build and deploy completed successfully before these source changes; the published page loads at the project URL. The current changes require a new workflow run after push.
+- Prior separate FastAPI run: `/health` passed; `/schema/tabular/xgboost` returned 197 fields and valid-shaped inputs returned a value from `predict_proba`. Artificial model fixture values are not a participant estimate.
+- Regression fix: reading input completeness now checks for blank strings rather than treating `"0"` as missing.
 
 ## Known Gaps
 
@@ -42,3 +46,4 @@
 - No end-to-end Spring Boot persistence or authentication flow was tested. Model inference currently goes from the frontend proxy directly to FastAPI and is not saved to MySQL.
 - The model input form requires source Dyt measurements and is not populated from the four activity results.
 - The model's reported `predict_proba` value is not calibrated for diagnosis; its held-out test recall was 38%.
+- GitHub Pages hosts only the static React frontend; model, authentication, and persistence endpoints are not deployed there.

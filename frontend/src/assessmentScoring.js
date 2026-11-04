@@ -31,6 +31,12 @@ function normalizeResponse(value) {
   return value.trim().toLocaleLowerCase("en-US");
 }
 
+export function isReadingInputComplete(inputs) {
+  return Object.values(inputs).every(
+    (value) => typeof value === "string" && value.trim() !== "",
+  );
+}
+
 export function scoreResponses(items, responses, responseTimesMs) {
   if (
     items.length === 0 ||
