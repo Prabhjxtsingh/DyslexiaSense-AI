@@ -180,10 +180,11 @@ inputs. Its uncalibrated dataset-label scores are not diagnosis probabilities.
 
 Enable **Settings → Pages → Build and deployment → GitHub Actions**, then run
 the **Deploy frontend to GitHub Pages** workflow or push to `main`. No
-deployment secrets are required. To enable the optional research model, deploy
-the FastAPI service separately to Render and configure the GitHub Actions
-`VITE_ML_API_URL` variable. The selected XGBoost model artifact is public in
-this repository; the raw datasets remain excluded. See
+deployment secrets or repository variables are required. To enable the
+optional research model, deploy the FastAPI service separately to Render; the
+Pages workflow uses its public API URL. Update `VITE_ML_API_URL` in
+`.github/workflows/deploy-pages.yml` if that URL changes. The selected XGBoost
+model artifact is public in this repository; the raw datasets remain excluded. See
 [`documentation/deploy-github-pages.md`](documentation/deploy-github-pages.md)
 and [`documentation/deploy-ml-api-render.md`](documentation/deploy-ml-api-render.md).
 

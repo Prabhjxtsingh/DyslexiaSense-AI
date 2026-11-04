@@ -25,18 +25,15 @@ idle can take longer while the service starts.
 
 ## Connect GitHub Pages
 
-1. In GitHub, open **Settings → Secrets and variables → Actions → Variables**.
-2. Create the repository variable `VITE_ML_API_URL` with the exact Render
-   service origin, for example `https://dyslexiasense-ml-api.onrender.com`
-   (no trailing slash).
-3. Run **Deploy frontend to GitHub Pages** in the Actions tab, or push a new
-   commit to `main`.
-4. Open an activity result and select **Enter Dyt model inputs**. Submit all
-   required Dyt features to see the model's `Yes` and `No` dataset-label
-   outputs in the result and PDF.
+The Pages workflow is configured with the public Render URL
+`https://dyslexiasense-ml-api.onrender.com`. If the service URL changes, update
+`VITE_ML_API_URL` in `.github/workflows/deploy-pages.yml`, then run **Deploy
+frontend to GitHub Pages** or push the change to `main`.
 
-The workflow embeds this URL in the static site at build time. Do not put
-secrets in this variable; the API currently requires no authentication.
+After deployment, open an activity result and select **Enter Dyt model inputs**.
+Submit all required Dyt features to see the model's `Yes` and `No` dataset-label
+outputs in the result and PDF. The URL is public and contains no secret; the
+API currently requires no authentication.
 
 ## Scope and limitations
 

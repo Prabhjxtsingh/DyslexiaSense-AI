@@ -24,8 +24,9 @@ the React app with the repository subpath `/DyslexiaSense-AI/`, and publishes
 the build using GitHub Pages Actions. Subsequent pushes to `main` deploy
 automatically. The static activity flow needs no repository variables. To
 connect the optional Dyt research model, follow
-[`deploy-ml-api-render.md`](./deploy-ml-api-render.md) and configure the
-`VITE_ML_API_URL` repository Actions variable.
+[`deploy-ml-api-render.md`](./deploy-ml-api-render.md). The Pages workflow is
+configured with the public Render API URL; update its `VITE_ML_API_URL` build
+environment value if the Render service URL changes.
 
 After the workflow succeeds, the site URL is:
 
