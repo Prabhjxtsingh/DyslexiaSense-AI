@@ -1,0 +1,86 @@
+name: Deploy to Railway
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: railway-production
+  cancel-in-progress: false
+
+jobs:
+  deploy-ml-api:
+    if: ${{ vars.RAILWAY_PROJECT_ID != '' && vars.RAILWAY_ENVIRONMENT_ID != '' }}
+    runs-on: ubuntu-latest
+    env:
+      RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+      RAILWAY_PROJECT_ID: ${{ vars.RAILWAY_PROJECT_ID }}
+      RAILWAY_ENVIRONMENT_ID: ${{ vars.RAILWAY_ENVIRONMENT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install Railway CLI
+        run: npm install --global @railway/cli
+      - name: Check Railway token
+        run: |
+          if [ -z "$RAILWAY_TOKEN" ]; then
+            echo "::error::Add the RAILWAY_TOKEN repository secret before deploying."
+            exit 1
+          fi
+      - name: Deploy ML API
+        run: railway up . --service ml-api --project "$RAILWAY_PROJECT_ID" --environment "$RAILWAY_ENVIRONMENT_ID" --ci --message "GitHub $GITHUB_SHA"
+
+  deploy-backend:
+    needs: deploy-ml-api
+    if: ${{ vars.RAILWAY_PROJECT_ID != '' && vars.RAILWAY_ENVIRONMENT_ID != '' }}
+    runs-on: ubuntu-latest
+    env:
+      RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+      RAILWAY_PROJECT_ID: ${{ vars.RAILWAY_PROJECT_ID }}
+      RAILWAY_ENVIRONMENT_ID: ${{ vars.RAILWAY_ENVIRONMENT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install Railway CLI
+        run: npm install --global @railway/cli
+      - name: Check Railway token
+        run: |
+          if [ -z "$RAILWAY_TOKEN" ]; then
+            echo "::error::Add the RAILWAY_TOKEN repository secret before deploying."
+            exit 1
+          fi
+      - name: Deploy Spring Boot API
+        run: railway up . --service backend --project "$RAILWAY_PROJECT_ID" --environment "$RAILWAY_ENVIRONMENT_ID" --ci --message "GitHub $GITHUB_SHA"
+
+  deploy-frontend:
+    needs: deploy-backend
+    if: ${{ vars.RAILWAY_PROJECT_ID != '' && vars.RAILWAY_ENVIRONMENT_ID != '' }}
+    runs-on: ubuntu-latest
+    env:
+      RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+      RAILWAY_PROJECT_ID: ${{ vars.RAILWAY_PROJECT_ID }}
+      RAILWAY_ENVIRONMENT_ID: ${{ vars.RAILWAY_ENVIRONMENT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install Railway CLI
+        run: npm install --global @railway/cli
+      - name: Check Railway token
+        run: |
+          if [ -z "$RAILWAY_TOKEN" ]; then
+            echo "::error::Add the RAILWAY_TOKEN repository secret before deploying."
+            exit 1
+          fi
+      - name: Deploy React frontend
+        run: railway up . --service frontend --project "$RAILWAY_PROJECT_ID" --environment "$RAILWAY_ENVIRONMENT_ID" --ci --message "GitHub $GITHUB_SHA"

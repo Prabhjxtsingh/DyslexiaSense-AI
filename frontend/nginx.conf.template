@@ -1,12 +1,12 @@
 server {
-    listen 80;
+    listen ${PORT};
     server_name _;
     root /usr/share/nginx/html;
     index index.html;
     client_max_body_size 10m;
 
     location /api/ {
-        proxy_pass http://backend:8080;
+        proxy_pass ${BACKEND_URL};
         proxy_http_version 1.1;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
@@ -15,7 +15,7 @@ server {
     }
 
     location /ml-api/ {
-        proxy_pass http://ml-api:8000/;
+        proxy_pass ${ML_API_URL}/;
         proxy_http_version 1.1;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;

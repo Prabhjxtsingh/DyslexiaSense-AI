@@ -168,6 +168,24 @@ docker compose ps
 docker compose logs -f frontend backend ml-api mysql redis
 ```
 
+## Deploy to Railway using GitHub Actions
+
+The repository includes a GitHub Actions workflow for deploying the frontend,
+Spring Boot API, and FastAPI service to Railway when changes are pushed to
+`main`. Railway hosts and bills for the services; the GitHub workflow deploys
+application code but does not provision infrastructure.
+
+Before deploying, create the Railway project, its MySQL and Redis services,
+three application services (`frontend`, `backend`, and `ml-api`), and configure
+service variables, health checks, and GitHub Actions credentials. Follow the
+complete setup in [`documentation/deploy-railway.md`](documentation/deploy-railway.md).
+
+The deployment uses Railway's runtime `PORT` and private networking. The
+backend, ML API, and databases should remain private; publish only the frontend
+domain. Training data and model binaries are excluded from GitHub, so
+model-dependent inference will remain unavailable until authorized model
+artifacts are provisioned separately.
+
 ## Run individual services
 
 ### Frontend only
